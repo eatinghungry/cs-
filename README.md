@@ -64,6 +64,9 @@ int main()
 java的hashset集合
 ```
 HashSet<String> hashSet = new HashSet<String>();
+/*HashSet实现Set 接口，由哈希表（实际上是一个 HashMap 实例）支持。它不保证集合的迭代顺序；特别是它不保证该顺序恒久不变。此类允许使用 null 元素。HashSet为基本操作提供了稳定性能，这些基本操作包括 add、remove、contains 和 size，假定哈希函数将这些元素正确地分布在桶中。
+leetcode题解中给出了一个窗口滑动的概念，应该是字符串中比较常用的一个操作*/
+charAt 返回索引处的字符
 ```
 
 ```
@@ -89,4 +92,45 @@ public class Solution {
 }
 ```
 ##### 窗口滑动
+###### 
+
+```
+public class Solution {
+    public int lengthOfLongestSubstring(String s) {
+        int n = s.length();  //判断字符串的长度
+        Set<Character> set = new HashSet<>();  //创建hashset集合，可以判断是否有重复字符
+        int ans = 0, i = 0, j = 0;   //设置初值，ans用来返回最大长度，i是窗口左边界，j是窗口右边界
+        while (i < n && j < n) {
+            // try to extend the range [i, j]   //窗口右边界的右滑动
+            if (!set.contains(s.charAt(j))){    //如果没有重复字符
+                set.add(s.charAt(j++));         //窗口右边界的右滑动 就把当前字符加入集合中
+                ans = Math.max(ans, j - i);	 //把已知的长度和当前长度对比
+            }
+            else {
+                set.remove(s.charAt(i++));      //如果下一个字符是重复的，左边界右移动一个位置，并且从集合中移除该元素
+		 //i++ 是先执行后加 ++i 是先加后执行 卡了好久
+            }
+        }
+        return ans;
+    }
+}
+```
 ##### 窗口滑动的优化
+[hashmap和hashset的区别]https://blog.csdn.net/chen213wb/article/details/84647179
+```
+public class Solution {
+    public int lengthOfLongestSubstring(String s) {
+        int n = s.length(), ans = 0;
+        Map<Character, Integer> map = new HashMap<>(); // current index of character 有顺序的哈希
+        // try to extend the range [i, j]
+        for (int j = 0, i = 0; j < n; j++) {
+            if (map.containsKey(s.charAt(j))) {
+                i = Math.max(map.get(s.charAt(j)), i);
+            }
+            ans = Math.max(ans, j - i + 1);
+            map.put(s.charAt(j), j + 1);
+        }
+        return ans;
+    }
+}
+```
